@@ -6,6 +6,7 @@
  * Time: 18:59
  */
     include_once('config.php');
+    include_once ('db_connect.php');
 
     function sec_session_start() {
         $session_name = 'forum_demo';
@@ -28,40 +29,49 @@
     }
 
     function login($email, $password, $mysqli) {
-        if ($stmt = $mysqli->prepare("SELECT user_id, user_name, password FROM user WHERE email = ? LIMIT 1")) {
+        error_log("login function called with params: " . $email . " " . $password);
+        if ($stmt = $mysqli->prepare("SELECT user_id, username, password FROM user WHERE email = ? LIMIT 1")) {
             $stmt->bind_param('s', $email);
             $stmt->execute();
             $stmt->store_result();
 
             // get variables from result
             $user_id = 0;
-            $user_name = "";
+            $username = "";
             $db_password = "";
-            $stmt->bind_result($user_id, $user_name, $db_password);
+            $stmt->bind_result($user_id, $username, $db_password);
             $stmt->fetch();
 
+            error_log("Find " . $stmt->num_rows . " records in data base.");
+            error_log("Password in database:" . $db_password);
+            error_log("Password user entered:" . $password);
             if ($stmt->num_rows == 1) {
 
                 // check whether the user is locked because of too many failed login
+                /*
                 if (check_brute($user_id, $mysqli)) {
                     // the user is locked
                     // TODO: send an email to the user to inform that the account is locked
                     return false;
                 }
+                */
 
-                if (verify_password($password, $db_password)) {
+                if (password_verify($password, $db_password)) {
+                    error_log("password verify success.");
                     // password correct!
                     // get the user agent string of the user
                     $user_browser = $_SERVER['HTTP_USER_AGENT'];
                     // XSS protection as we might print the value
                     $user_id = preg_replace("/[^0-9]+/", "", $user_id);
-                    $user_name = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $user_name);
+                    $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $username);
 
-                    $_SESSION['user_name'] = $user_name;
+                    $_SESSION['username'] = $username;
                     $_SESSION['login_string'] = hash('sha512', $db_password . $user_browser);
 
                     // login success
                     return true;
+                } else {
+                    error_log("password verify failed.");
                 }
 
             } else {
@@ -69,6 +79,7 @@
                 return false;
             }
         }
+        return false;
     }
 
     // check whether the user is trying to login by brute force
@@ -97,10 +108,10 @@
 
     function check_login($mysqli) {
         // check if all session variables are set
-        if (isset($_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['login_string'])) {
+        if (isset($_SESSION['user_id'], $_SESSION['username'], $_SESSION['login_string'])) {
             $user_id = $_SESSION['user_id'];
             $login_string = $_SESSION['login_string'];
-            $user_name = $_SESSION['user_name'];
+            $username = $_SESSION['username'];
 
             // get the user-agent string of the user
             $user_browser = $_SERVER['HTTP_USER_AGENT'];
