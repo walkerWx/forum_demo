@@ -25,11 +25,10 @@
             $httponly);
 
         session_start();
-        session_regenerate_id(true);
+        //session_regenerate_id(true);
     }
 
     function login($email, $password, $mysqli) {
-        error_log("login function called with params: " . $email . " " . $password);
         if ($stmt = $mysqli->prepare("SELECT user_id, username, password FROM user WHERE email = ? LIMIT 1")) {
             $stmt->bind_param('s', $email);
             $stmt->execute();
@@ -42,16 +41,14 @@
             $stmt->bind_result($user_id, $username, $db_password);
             $stmt->fetch();
 
-            error_log("Find " . $stmt->num_rows . " records in data base.");
-            error_log("Password in database:" . $db_password);
-            error_log("Password user entered:" . $password);
             if ($stmt->num_rows == 1) {
 
                 // check whether the user is locked because of too many failed login
                 /*
                 if (check_brute($user_id, $mysqli)) {
                     // the user is locked
-                    // TODO: send an email to the user to inform that the account is locked
+                    // TODO:
+                    //send an email to the user to inform that the account is locked
                     return false;
                 }
                 */
@@ -66,6 +63,7 @@
                     $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $username);
 
                     $_SESSION['username'] = $username;
+                    $_SESSION['user_id'] = $user_id;
                     $_SESSION['login_string'] = hash('sha512', $db_password . $user_browser);
 
                     // login success
@@ -116,7 +114,7 @@
             // get the user-agent string of the user
             $user_browser = $_SERVER['HTTP_USER_AGENT'];
 
-            if ($stmt = $mysqli->prepare("SELECT password FROM user WHERE id = ? LIMIT 1")) {
+            if ($stmt = $mysqli->prepare("SELECT password FROM user WHERE user_id = ? LIMIT 1")) {
                 $stmt->bind_param('i', $user_id);
                 $stmt->execute();
                 $stmt->store_result();

@@ -15,10 +15,10 @@ if (isset($_POST['email'], $_POST['password'])) {
 
     if (login($email, $password, $mysqli) == true) {
         // login success
-        header('Location:../login_success.php');
+        header('Location:../post.php');
     } else {
         // login failed
-        header('Location:../index.php?error=1');
+        header('Location:../login.php?error=1');
     }
 } else {
     // the correct POST variables were not sent to this page

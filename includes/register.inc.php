@@ -74,9 +74,13 @@ if (isset($_POST['username'], $_POST['email'], $_POST['password'])) {
             // execute the prepared query
             if (!$insert_stmt->execute()) {
                 header('Location:../error.php?err=Registration failure:Insert');
+            } else {
+                header('Location:../register_success.php');
             }
         }
-        header('Location:../register_success.php');
+        //header('Location:../error.php?err=Registration failure:Insert');
+    } else {
+        header('Location:../error.php?err=' . $error_msg);
     }
 
 }
