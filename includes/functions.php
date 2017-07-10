@@ -168,5 +168,50 @@
 
     }
 
+    function get_userinfo_by_id($user_id, $mysqli) {
+        if ($stmt = $mysqli->prepare("SELECT user_id, email, username FROM user WHERE user_id = ?")) {
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $user_id = 0;
+            $username = "";
+            $email = "";
+            $stmt->bind_result($user_id, $email, $username);
+            $stmt->fetch();
+
+            $userinfo = array();
+            $userinfo['user_id'] = $user_id;
+            $userinfo['email'] = $email;
+            $userinfo['username'] = $username;
+            return $userinfo;
+        }
+    }
+
+    function get_topicinfo_by_id($topic_id, $mysqli) {
+
+        $topicinfo = array();
+        $user_id = 0;
+        $title = "";
+        $content = "";
+        $post_date = "";
+
+        if ($stmt = $mysqli->prepare("SELECT topic_id, user_id, title, content, post_date FROM topic_post WHERE topic_id = ?")) {
+            $stmt->bind_param("i", $topic_id);
+            $stmt->execute();
+            $stmt->bind_result($topic_id, $user_id, $title, $content, $post_date);
+            $stmt->fetch();
+        }
+
+        $topicinfo['topic_id'] = $topic_id;
+        $topicinfo['user_id'] = $user_id;
+        $topicinfo['title'] = $title;
+        $topicinfo['content'] = $content;
+        $topicinfo['post_date'] = $post_date;
+
+        $userinfo = get_userinfo_by_id(intval($user_id), $mysqli);
+        $topicinfo['username'] = $userinfo['username'];
+
+        return $topicinfo;
+    }
+
 
 
