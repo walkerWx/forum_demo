@@ -13,6 +13,7 @@ sec_session_start();
 $topic_id = $_GET['topic_id'];
 $topicinfo = get_topicinfo_by_id($topic_id, $mysqli);
 $userinfo = get_userinfo_by_id($topicinfo['user_id'], $mysqli);
+$commentinfo = get_commentinfo_by_topic_id($topic_id, $mysqli);
 
 ?>
 <!DOCTYPE html>
@@ -51,16 +52,79 @@ $userinfo = get_userinfo_by_id($topicinfo['user_id'], $mysqli);
                                 <a href="" class="neon"><?php echo $userinfo['username'];?></a>
                             </div>
                             <time datetime="<?php echo $topicinfo['post_date'];?>">
-                                <!--
-                                    TODO:
-                                    Calculate date distance and print
-                                -->
-                                2 weeks ago
+                                <?php echo time_elapsed_string($topicinfo['post_date']);?>
                             </time>
                         </div>
                     </div>
                 </div>
                 <div class="divider"></div>
+                <section id="comments">
+                    <div class="comments__container">
+                        <h3>Comments
+                            <span class="comment__count"><?php echo count($commentinfo);?></span>
+                        </h3>
+                    </div>
+                    <div class="comment__add">
+                    <?php
+                    if (check_login($mysqli)) {
+                        // user have logged in so that he can comment directly
+                        echo "<form class='comment__form--main' action='includes/process_comment.php' method='post'>";
+                        echo "<input type='hidden' name='topic_id' value='" . $topic_id .  "'>";
+                        echo "<input type='hidden' name='user_id' value='" . $userinfo['user_id'] .  "'>";
+                        echo "<div class='form-group'>";
+                        echo "<textarea type='text' class='form-control simplemde-text' name='comment_content' placeholder='Add comment' required></textarea>";
+                        echo "</div>";
+                        echo "<div class='form-group inside'>";
+                        echo "<input type='submit' class='btn btn-primary add-comment filled' value='Add reply'>";
+                        echo "</div>";
+                        echo "</form>";
+                    } else {
+                        // user haven't logged in yet, show login button
+                    }
+                    ?>
+                    </div>
+                    <div class="comments__list-wrapper">
+                        <div id="comment__preview" style="display: none;"></div>
+                        <ul class="comments__list">
+                            <?php
+                                foreach ($commentinfo as $comment) {
+                                    echo "<li class='comment__list-item'>";
+                                    echo "<article class='comment__container first'>";
+                                        echo "<div class='comment__user collapse-comment'>";
+                                            echo "<a href='' class='image-wrapper'>";
+                                                echo "<div class='comment__user-avatar' style=\"background-image: url('https://www.gravatar.com/avatar/34b98759bb94f6142b0fc0c815f92ca1?s=200&amp;d=https%3A%2F%2Ftutorialzine.com%2Fimages%2Fdefault-user-icon-profile.png')\"></div>";
+                                            echo "</a>";
+                                            echo "<div class='username-left'>";
+                                                echo "<div class='comment__user-badge'>";
+                                                    echo "<a href='' class='neon'>";
+                                                    echo $comment['username'];
+                                                    echo "</a>";
+                                                echo "</div>";
+                                                echo "<time datetime='" . $comment['post_date'] . "'>";
+                                                    echo "<a href='' class='neon'>";
+                                                    echo time_elapsed_string($comment['post_date']);
+                                                    echo "</a>";
+                                                echo "</time>";
+                                            echo "</div>";
+                                        echo "</div>";
+                                        echo "<div class='collapsible'>";
+                                            echo "<div class='comment__wrapper'>";
+                                                echo "<div class='comment__right'>";
+                                                    echo "<div class='comment__text'>";
+                                                    echo $comment['content'];
+                                                    echo "</div>";
+                                                echo "</div>";
+                                            echo "</div>";
+                                            echo "<div class='comment__child'></div>";
+                                        echo "</div>";
+                                    echo "</article>";
+                                    echo "</li>";
+                                }
+                            ?>
+                        </ul>
+                    </div>
+                </section>
+
             </article>
         </div>
     </div>

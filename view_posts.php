@@ -10,8 +10,21 @@ include_once ('includes/db_connect.php');
 include_once ('includes/functions.php');
 sec_session_start();
 
-$page_size = 3;
-$current_page = $_GET['current_page']?$_GET['current_page']:1;
+$page_size = 5;
+if (isset($_GET['current_page'])) {
+    $current_page = $_GET['current_page'];
+} else {
+    $current_page = 1;
+}
+
+$query = "SELECT COUNT(topic_id) FROM topic_post ";
+$result = $mysqli->query($query)->fetch_array();
+$total_page = floor(($result[0]-1)/$page_size)+1;
+
+if ($current_page > $total_page) {
+    $current_page = $total_page;
+}
+
 $prev_page = $current_page - 1;
 $next_page = $current_page + 1;
 $offset = ($current_page-1)*$page_size;
@@ -19,9 +32,6 @@ $offset = ($current_page-1)*$page_size;
 $query = "SELECT * FROM topic_post ORDER BY topic_id LIMIT $offset, $page_size";
 $post_content = $mysqli->query($query);
 
-$query = "SELECT COUNT(topic_id) FROM topic_post ";
-$result = $mysqli->query($query)->fetch_array();
-$total_page = floor(($result[0]-1)/$page_size)+1;
 
 ?>
 
@@ -31,13 +41,13 @@ $total_page = floor(($result[0]-1)/$page_size)+1;
     <title>Posts</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://tutorialzine.com/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://tutorialzine.com/build/css/app-a0221d8bac.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:300,400,700,900" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script-->
 </head>
 <body>
-    <h1><?php echo $total_page?></h1>
     <div class="container">
         <div class="col-md-9">
             <div class="section section--posts">
@@ -50,13 +60,15 @@ $total_page = floor(($result[0]-1)/$page_size)+1;
 
                                 echo "<div class='post__header'>";
                                     echo "<div class='post__title'>";
+                                    echo "<a href='view_post.php?topic_id=" . $row['topic_id'] . "'>";
                                     echo "<h4>" . $row['title'] . "</h4>";
+                                    echo "</a>";
                                     echo "</div>";
                                 echo "</div>";
 
                                 echo "<div class='post__footer'>";
                                     echo "<div class='post__footer-item'>";
-                                    echo "<div class='post__date'>" . $row['post_date'] . "</div>";
+                                    echo "<div class='post__date'>" . time_elapsed_string($row['post_date']) . "</div>";
                                     echo "</div>";
 
                                     echo "<div class='post__footer-item'>";
@@ -73,14 +85,13 @@ $total_page = floor(($result[0]-1)/$page_size)+1;
                     ?>
                 </ul>
             </div>
-        </div>
-        <div class="page-container">
+            <div class="pagination__container">
             <?php
                 $pagination = "";
                 $pagination .= "<ul class='pagination'>";
 
                 if ($current_page == 1) {
-                    $pagination .= "<li class='previous disabled'></li>";
+                    $pagination .= "<li class='previous disabled'><span></span></li>";
                 } else {
                     $pagination .= "<li class='previous'><a href='/view_posts.php?current_page=" . $prev_page . "'></a></li>";
                     $pagination .= "<li><a href='/view_posts.php?current_page=" . $prev_page . "'>" . $prev_page . "</a></li>";
@@ -98,6 +109,7 @@ $total_page = floor(($result[0]-1)/$page_size)+1;
                 $pagination .= "</ul>";
                 echo $pagination;
             ?>
+            </div>
         </div>
     </div>
 </body>

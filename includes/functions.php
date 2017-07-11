@@ -213,5 +213,60 @@
         return $topicinfo;
     }
 
+    function get_commentinfo_by_topic_id($topic_id, $mysqli) {
+        if ($stmt = $mysqli->prepare("SELECT comment_post.user_id, user.username, comment_post.content, comment_post.post_date  FROM comment_post INNER JOIN  user WHERE comment_post.topic_id= ? AND comment_post.user_id=user.user_id")) {
+
+            $stmt->bind_param("i", $topic_id);
+            $user_id = 0;
+            $username = "";
+            $content = "";
+            $post_date = "";
+            $stmt->bind_result($user_id, $username, $content, $post_date);
+            $stmt->execute();
+
+            $commentinfo = array();
+            while ($stmt->fetch()) {
+                $single_comment = array();
+                $single_comment['user_id'] = $user_id;
+                $single_comment['username'] = $username;
+                $single_comment['content'] = $content;
+                $single_comment['post_date'] = $post_date;
+                $commentinfo[] = $single_comment;
+            }
+
+            return $commentinfo;
+        }
+    }
+
+    function time_elapsed_string($datetime, $full = false) {
+        date_default_timezone_set('Asia/Shanghai');
+        $now = new DateTime;
+        $ago = new DateTime($datetime);
+        $diff = $now->diff($ago);
+
+        $diff->w = floor($diff->d / 7);
+        $diff->d -= $diff->w * 7;
+
+        $string = array(
+            'y' => 'year',
+            'm' => 'month',
+            'w' => 'week',
+            'd' => 'day',
+            'h' => 'hour',
+            'i' => 'minute',
+            's' => 'second',
+        );
+        foreach ($string as $k => &$v) {
+            if ($diff->$k) {
+                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
+            }
+        }
+
+        if (!$full) $string = array_slice($string, 0, 1);
+        return $string ? implode(', ', $string) . ' ago' : 'just now';
+    }
+
 
 

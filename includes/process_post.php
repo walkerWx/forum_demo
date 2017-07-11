@@ -17,11 +17,19 @@ if (isset($_POST['post_title'], $_POST['post_content'])) {
     }
 
     if ($stmt = $mysqli->prepare("INSERT INTO topic_post (user_id, title, content, post_date) VALUES (?,?,?,?)")) {
-        $stmt->bind_param('isss', $_SESSION['user_id'], $_POST['post_title'], $_POST['post_content'], date('Y-m-d H:i:s'));
+        date_default_timezone_set('Asia/Shanghai');
+        $content_array = explode("\n", $_POST['post_content']);
+        $content = "";
+        foreach ($content_array as $line) {
+            $content .= "<p>";
+            $content .= $line;
+            $content .= "</p>";
+        }
+        $stmt->bind_param('isss', $_SESSION['user_id'], $_POST['post_title'], $content, date('Y-m-d H:i:s'));
         if (!$stmt->execute()) {
             header("Location:../error.php?err=insert sql failed;");
         } else {
-            header("Location:../post.php");
+            header("Location:../view_posts.php");
         }
     } else {
         header("Location:../error.php?err=prepare sql failed;");
