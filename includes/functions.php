@@ -65,6 +65,8 @@
                     $_SESSION['username'] = $username;
                     $_SESSION['user_id'] = $user_id;
                     $_SESSION['login_string'] = hash('sha512', $db_password . $user_browser);
+                    error_log("username:".$_SESSION['username']);
+                    error_log("user_id:".$_SESSION['user_id']);
 
                     // login success
                     return true;
@@ -127,9 +129,15 @@
                     if (hash_equals($login_check, $login_string)) {
                         // Logged in!
                         return true;
+                    } else {
+                        header("Location:../error.php?err=login string does not match");
                     }
                 }
+            } else {
+
             }
+        } else {
+            //header("Location:../error.php?err= user_id: " . $_SESSION['user_id'] . " username: " . $_SESSION['username'] . " login_string: " . $_SESSION['login_string']);
         }
 
         // Not logged in

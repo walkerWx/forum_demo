@@ -22,10 +22,43 @@ if (check_login($mysqli)) {
 <body>
 
 <?php
-    if (isset($_GET['error'])) {
+    if (isset($_GET['err_msg'])) {
         echo '<p class="error">Error posting!</p>';
     }
 ?>
+
+<div class="page__wrapper">
+    <?php
+    include ('header.php');
+    ?>
+
+    <div class="cover-layer"></div>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <div class="section">
+                            <div class="panel-heading">
+                                <i class="icon-pencil icon-form">
+                                    <h2>Create a post</h2>
+                                </i>
+                            </div>
+                            <div class="panel-body">
+                                <form class="form-horizontal form--flex" role="form" method="post" action="includes/process_post.php">
+                                    <div class="form-group">
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 
 <div class="container">
     <form action="includes/process_post.php" method="post">

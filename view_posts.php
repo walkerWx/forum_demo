@@ -10,6 +10,8 @@ include_once ('includes/db_connect.php');
 include_once ('includes/functions.php');
 sec_session_start();
 
+$username = $_SESSION['username'];
+
 $page_size = 12;
 if (isset($_GET['current_page'])) {
     $current_page = $_GET['current_page'];
@@ -61,6 +63,9 @@ $post_content = $mysqli->query($query);
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-9 col-centered">
+                        <p><?php
+                            echo $username;
+                            ?></p>
                         <div class="section section--posts">
                             <ul class="posts">
                                 <?php

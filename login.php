@@ -63,6 +63,11 @@ if (check_login($mysqli)) {
                                     <div class="controls">
                                         <input type="email" class="form-control" id="email" name="email" value required>
                                         <label for="email" data-content="Email">Email</label>
+                                        <?php
+                                            if (isset($_SESSION['username'])) {
+                                                echo "<p>" .$_SESSION['username'] . "</p>";
+                                            }
+                                        ?>
                                     </div>
                                 <?php
                                 if (isset($_GET['err_msg'])) {

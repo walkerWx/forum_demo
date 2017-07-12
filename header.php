@@ -21,14 +21,14 @@ include_once ('includes/db_connect.php');
             </div>
 
             <ul class="nav__items nav__items--right">
-                <li id="login" class="nav__item">
-                    <a href="login.php">
-                        Login
-                    </a>
-                </li>
                 <li id="register" class="nav__item">
                     <a href="register.php">
                         <span class="btn btn-success">Register</span>
+                    </a>
+                </li>
+                <li id='post' class="nav__item">
+                    <a href="post.php">
+                       post
                     </a>
                 </li>
 
@@ -36,6 +36,12 @@ include_once ('includes/db_connect.php');
                     if (check_login($mysqli)) {
                         echo "<li id='logout' class='nav__item'>";
                         echo "<a href='includes/logout.php'>Logout</a>";
+                        echo "</li>";
+                    } else {
+                        echo "<li id='login' class='nav__item'>";
+                        echo "<a href='login.php'>";
+                        echo "Login";
+                        echo "</a>";
                         echo "</li>";
                     }
                 ?>
