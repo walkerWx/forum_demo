@@ -32,12 +32,6 @@ if (check_login($mysqli)) {
 <body>
 
 <?php
-    if (isset($_GET['error'])) {
-        echo '<p class="error">Error Logging In!</p>';
-    }
-?>
-
-<?php
     include ("header.php");
 ?>
 
@@ -59,11 +53,24 @@ if (check_login($mysqli)) {
                         </div>
                         <div class="panel-body">
                             <form class="form-horizontal form--flex" role="form" action="includes/process_login.php" method="post" name="login_form" id="login-form">
-                                <div class="form-group">
+                                <?php
+                                if (isset($_GET['err_msg'])) {
+                                    echo "<div class='form-group has-error'>";
+                                } else {
+                                    echo "<div class='form-group'>";
+                                }
+                                ?>
                                     <div class="controls">
                                         <input type="email" class="form-control" id="email" name="email" value required>
                                         <label for="email" data-content="Email">Email</label>
                                     </div>
+                                <?php
+                                if (isset($_GET['err_msg'])) {
+                                    echo "<span class='help-block'>";
+                                    echo "<strong>" . $_GET['err_msg'] . "</strong>";
+                                    echo "</span>";
+                                }
+                                ?>
                                 </div>
                                 <div class="form-group">
                                     <div class="controls">
