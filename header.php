@@ -5,6 +5,9 @@
  * Date: 2017/7/7
  * Time: 17:45
  */
+
+include_once ('includes/functions.php');
+include_once ('includes/db_connect.php');
 ?>
 
 <header class="header--main animate-search">
@@ -12,36 +15,36 @@
     <div class="container-fluid">
         <nav class="nav--main">
             <div class="nav__logo">
-                <a href="index.php">
-                    Fourm<span>Demo</span>
+                <a href="view_posts.php">
+                    Forum<span>Demo</span>
                 </a>
             </div>
 
             <ul class="nav__items nav__items--right">
-                <li class="nav__item">
-                    <a href="#search" class="search-trigger icon-magnifier"></a>
-                </li>
                 <li id="login" class="nav__item">
-                    <a href="login">
+                    <a href="login.php">
                         Login
                     </a>
                 </li>
                 <li id="register" class="nav__item">
-                    <a href="https://localhost/register">
+                    <a href="register.php">
                         <span class="btn btn-success">Register</span>
                     </a>
                 </li>
+
+                <?php
+                    if (check_login($mysqli)) {
+                        echo "<li id='logout' class='nav__item'>";
+                        echo "<a href='includes/logout.php'>Logout</a>";
+                        echo "</li>";
+                    }
+                ?>
             </ul>
 
             <ul class="nav__items nav__items--left">
                 <li class="nav__item nav__item--main">
-                    <a  href="https://localhost/articles" class="articles ">
-                        Articles
-                    </a>
-                </li>
-                <li class="nav__item nav__item--main">
-                    <a href="https://localhost/forum" class="posts active">
-                        Forum
+                    <a href="view_posts.php" class="posts active">
+                       posts
                     </a>
                 </li>
             </ul>

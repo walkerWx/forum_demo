@@ -15,7 +15,7 @@ if (isset($_POST['email'], $_POST['password'])) {
 
     if (login($email, $password, $mysqli) == true) {
         // login success
-        header('Location:../post.php');
+        header('Location:../view_posts.php');
     } else {
         // login failed
         header('Location:../login.php?error=1');
