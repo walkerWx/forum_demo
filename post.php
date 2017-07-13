@@ -1,7 +1,7 @@
 <?php
 include_once ('includes/db_connect.php');
 include_once ('includes/functions.php');
-sec_session_start();
+session_start();
 if (check_login($mysqli)) {
     $logged = 'in';
 } else {

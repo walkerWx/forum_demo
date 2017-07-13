@@ -8,7 +8,7 @@
 
 include_once ('includes/db_connect.php');
 include_once ('includes/functions.php');
-sec_session_start();
+session_start();
 
 $topic_id = $_GET['topic_id'];
 $topicinfo = get_topicinfo_by_id($topic_id, $mysqli);
